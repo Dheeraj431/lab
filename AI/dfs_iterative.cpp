@@ -1,6 +1,6 @@
 #include <iostream>
 #include <unordered_map>
-#include <queue>
+#include <stack>
 #include <vector>
 #include <algorithm>
 
@@ -19,18 +19,18 @@ public:
         adjList[v].push_back(u);
     }
 
-    vector<int> bfs(int start, int goal)
+    vector<int> dfs(int start, int goal)
     {
         unordered_map<int, bool> visited;
         unordered_map<int, int> parent;
-        queue<int> q;
-        q.push(start);
+        stack<int> s;
+        s.push(start);
         visited[start] = true;
 
-        while (!q.empty())
+        while (!s.empty())
         {
-            int current = q.front();
-            q.pop();
+            int current = s.top();
+            s.pop();
 
             if (current == goal)
             {
@@ -51,7 +51,7 @@ public:
                 {
                     visited[neighbor] = true;
                     parent[neighbor] = current;
-                    q.push(neighbor);
+                    s.push(neighbor);
                 }
             }
         }
@@ -73,7 +73,7 @@ int main()
     int start = 1;
     int goal = 6;
 
-    vector<int> path_to_goal = graph.bfs(start, goal);
+    vector<int> path_to_goal = graph.dfs(start, goal);
 
     if (!path_to_goal.empty())
     {

@@ -1,6 +1,5 @@
 #include <iostream>
 #include <unordered_map>
-#include <queue>
 #include <vector>
 #include <algorithm>
 
@@ -19,44 +18,39 @@ public:
         adjList[v].push_back(u);
     }
 
-    vector<int> bfs(int start, int goal)
+    vector<int> dfs(int start, int goal)
     {
         unordered_map<int, bool> visited;
         unordered_map<int, int> parent;
-        queue<int> q;
-        q.push(start);
-        visited[start] = true;
+        vector<int> path;
+        dfsUtil(start, goal, visited, parent, path);
+        return path;
+    }
 
-        while (!q.empty())
+private:
+    bool dfsUtil(int current, int goal, unordered_map<int, bool> &visited, unordered_map<int, int> &parent, vector<int> &path)
+    {
+        if (current == goal)
         {
-            int current = q.front();
-            q.pop();
+            path.push_back(current);
+            return true;
+        }
 
-            if (current == goal)
+        visited[current] = true;
+        for (int neighbor : adjList[current])
+        {
+            if (!visited[neighbor])
             {
-                vector<int> path;
-                while (current != start)
+                parent[neighbor] = current;
+                if (dfsUtil(neighbor, goal, visited, parent, path))
                 {
                     path.push_back(current);
-                    current = parent[current];
-                }
-                path.push_back(start);
-                reverse(path.begin(), path.end());
-                return path;
-            }
-
-            for (int neighbor : adjList[current])
-            {
-                if (!visited[neighbor])
-                {
-                    visited[neighbor] = true;
-                    parent[neighbor] = current;
-                    q.push(neighbor);
+                    return true;
                 }
             }
         }
 
-        return vector<int>(); // No path found
+        return false;
     }
 };
 
@@ -73,14 +67,14 @@ int main()
     int start = 1;
     int goal = 6;
 
-    vector<int> path_to_goal = graph.bfs(start, goal);
+    vector<int> path_to_goal = graph.dfs(start, goal);
 
     if (!path_to_goal.empty())
     {
         cout << "Path found: ";
-        for (int node : path_to_goal)
+        for (int i = path_to_goal.size() - 1; i >= 0; --i)
         {
-            cout << node << " ";
+            cout << path_to_goal[i] << " ";
         }
         cout << endl;
     }
